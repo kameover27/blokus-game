@@ -1,26 +1,122 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --board-bg: #e2e8f0;
+  --board-line: #cbd5e1;
+  --cell-size: clamp(16px, 4vw, 28px);
+  --mini-cell-size: clamp(8px, 2.5vw, 10px);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(20, var(--cell-size));
+  grid-template-rows: repeat(20, var(--cell-size));
+  gap: 1px;
+  background-color: var(--board-line);
+  border: 2px solid var(--board-line);
+  border-radius: 4px;
+}
+
+.board-cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  background-color: var(--board-bg);
+  transition: background-color 0.1s ease;
+  position: relative;
+}
+
+.piece-mini-grid {
+  display: inline-grid;
+  gap: 1px;
+}
+
+.piece-mini-cell {
+  width: var(--mini-cell-size);
+  height: var(--mini-cell-size);
+  border-radius: 1px;
+}
+
+/* Placement animation */
+@keyframes piece-place {
+  0% {
+    transform: scale(0.8);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+.cell-just-placed {
+  animation: piece-place 0.3s ease-out;
+}
+
+/* Corner indicator pulse for first turn */
+@keyframes corner-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.corner-indicator {
+  animation: corner-pulse 2s ease-in-out infinite;
+}
+
+/* Toast slide in */
+@keyframes slide-in {
+  from {
+    transform: translateX(-50%) translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.2s ease-out;
+}
+
+/* Keyboard shortcut badges */
+.kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-family: monospace;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+/* Mobile-specific overrides */
+@media (max-width: 768px) {
+  :root {
+    --cell-size: 18px;
+    --mini-cell-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --cell-size: 16px;
+    --mini-cell-size: 8px;
+  }
 }
