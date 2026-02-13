@@ -30,7 +30,7 @@ function createInitialPlayers(): PlayerState[] {
   }));
 }
 
-function createInitialState(): GameState {
+export function createInitialState(): GameState {
   return {
     board: createEmptyBoard(),
     players: createInitialPlayers(),
@@ -50,7 +50,7 @@ function previousPlayer(currentIndex: number): number {
   return (currentIndex + 3) % 4;
 }
 
-function gameReducer(state: GameState, action: GameAction): GameState {
+export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'PLACE_PIECE': {
       const { pieceId, cells } = action;

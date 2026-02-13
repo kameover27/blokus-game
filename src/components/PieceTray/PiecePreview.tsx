@@ -29,12 +29,15 @@ export default function PiecePreview({
         isUsed
           ? 'opacity-20 cursor-not-allowed'
           : isSelected
-            ? 'ring-2 ring-offset-1 ring-blue-500 bg-slate-200 scale-110'
+            ? 'bg-slate-200 scale-110'
             : 'hover:bg-slate-100 cursor-pointer'
       }`}
       style={{
         gridTemplateColumns: `repeat(${maxCol}, var(--mini-cell-size))`,
         gridTemplateRows: `repeat(${maxRow}, var(--mini-cell-size))`,
+        ...(isSelected && !isUsed
+          ? { outline: `2px solid ${COLOR_HEX[color]}`, outlineOffset: '2px' }
+          : {}),
       }}
       onClick={isUsed ? undefined : onClick}
       disabled={isUsed}

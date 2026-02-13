@@ -13,11 +13,11 @@ type PieceTrayProps = {
 };
 
 const SIZE_GROUPS = [
-  { label: '1', sizes: [1] },
-  { label: '2', sizes: [2] },
-  { label: '3', sizes: [3] },
-  { label: '4', sizes: [4] },
-  { label: '5', sizes: [5] },
+  { label: '1-cell', sizes: [1] },
+  { label: '2-cell', sizes: [2] },
+  { label: '3-cell', sizes: [3] },
+  { label: '4-cell', sizes: [4] },
+  { label: '5-cell', sizes: [5] },
 ];
 
 export default function PieceTray({
@@ -36,13 +36,23 @@ export default function PieceTray({
       >
         {color}&apos;s pieces ({remainingPieceIds.length} left)
       </div>
-      {SIZE_GROUPS.map((group) => {
+      {SIZE_GROUPS.map((group, gi) => {
         const pieces = PIECE_DEFINITIONS.filter((p) =>
           group.sizes.includes(p.size)
         );
         if (pieces.length === 0) return null;
+        const remaining = pieces.filter((p) => remainingSet.has(p.id)).length;
         return (
           <div key={group.label}>
+            {gi > 0 && <div className="mb-1.5" style={{ borderTop: '1px solid var(--card-border)' }} />}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+                {group.label}
+              </span>
+              <span className="text-[10px] font-mono" style={{ color: 'var(--text-muted)' }}>
+                {remaining}/{pieces.length}
+              </span>
+            </div>
             <div className="flex flex-wrap gap-1 overflow-x-auto max-md:flex-nowrap max-md:pb-1">
               {pieces.map((piece) => (
                 <PiecePreview

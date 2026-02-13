@@ -11,7 +11,7 @@ type MoveHistoryProps = {
 export default function MoveHistory({ history }: MoveHistoryProps) {
   if (history.length === 0) {
     return (
-      <div className="text-xs text-slate-400 text-center py-2">
+      <div className="text-xs text-center py-2" style={{ color: 'var(--text-muted)' }}>
         No moves yet
       </div>
     );
@@ -29,7 +29,7 @@ export default function MoveHistory({ history }: MoveHistoryProps) {
             key={moveNum}
             className="flex items-center gap-1.5 text-xs py-0.5 px-1 rounded hover:bg-slate-50"
           >
-            <span className="text-slate-400 w-5 text-right shrink-0">
+            <span className="w-5 text-right shrink-0" style={{ color: 'var(--text-muted)' }}>
               {moveNum}.
             </span>
             <div
@@ -39,7 +39,7 @@ export default function MoveHistory({ history }: MoveHistoryProps) {
             <span className="capitalize font-medium" style={{ color: hex }}>
               {color}
             </span>
-            <span className="text-slate-500">
+            <span style={{ color: 'var(--text-muted)' }}>
               {move.type === 'place'
                 ? `placed ${PIECE_MAP[move.pieceId].name}`
                 : 'passed'}

@@ -15,7 +15,7 @@ export default function GameInfo({ state }: GameInfoProps) {
     <div className="flex flex-col gap-3">
       {state.phase === 'playing' && (
         <div className="text-center">
-          <span className="text-sm text-slate-500">Turn {state.turnNumber} &mdash; </span>
+          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Turn {state.turnNumber} &mdash; </span>
           <span
             className="text-sm font-bold capitalize"
             style={{ color: COLOR_HEX[currentPlayer.color] }}
@@ -32,6 +32,7 @@ export default function GameInfo({ state }: GameInfoProps) {
             score={player.score}
             piecesRemaining={player.remainingPieceIds.length}
             isCurrent={state.phase === 'playing' && i === state.currentPlayerIndex}
+            hasPassed={player.hasPassed}
           />
         ))}
       </div>

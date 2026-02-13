@@ -13,24 +13,29 @@ export default function ActivePieceControls({
   onFlip,
   onDeselect,
 }: ActivePieceControlsProps) {
+  const btnStyle = { background: 'var(--kbd-bg)', color: 'var(--foreground)' };
+
   return (
     <div className="grid grid-cols-2 gap-2 max-md:grid-cols-2 md:flex md:flex-wrap md:gap-2">
       <button
-        className="px-3 py-2 min-h-[44px] bg-slate-200 hover:bg-slate-300 rounded text-sm font-medium transition-colors"
+        className="px-3 py-2 min-h-[44px] rounded text-sm font-medium transition-colors hover:opacity-80"
+        style={btnStyle}
         onClick={onRotateCCW}
         title="Rotate counter-clockwise (Q)"
       >
         Rotate Left (Q)
       </button>
       <button
-        className="px-3 py-2 min-h-[44px] bg-slate-200 hover:bg-slate-300 rounded text-sm font-medium transition-colors"
+        className="px-3 py-2 min-h-[44px] rounded text-sm font-medium transition-colors hover:opacity-80"
+        style={btnStyle}
         onClick={onRotateCW}
         title="Rotate clockwise (R)"
       >
         Rotate Right (R)
       </button>
       <button
-        className="px-3 py-2 min-h-[44px] bg-slate-200 hover:bg-slate-300 rounded text-sm font-medium transition-colors"
+        className="px-3 py-2 min-h-[44px] rounded text-sm font-medium transition-colors hover:opacity-80"
+        style={btnStyle}
         onClick={onFlip}
         title="Flip piece (F)"
       >

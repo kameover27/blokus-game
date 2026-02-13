@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { CellState, PlayerColor } from '@/types';
 import { COLOR_HEX, STARTING_CORNERS } from '@/constants/game';
 
@@ -11,6 +12,7 @@ type BoardCellProps = {
   isValidPreview: boolean;
   previewColor: PlayerColor | null;
   isJustPlaced: boolean;
+  isHovered: boolean;
   onMouseEnter: () => void;
   onClick: () => void;
 };
@@ -27,7 +29,7 @@ function getStartingCornerColor(
   return null;
 }
 
-export default function BoardCell({
+function BoardCellInner({
   row,
   col,
   state,
@@ -35,6 +37,7 @@ export default function BoardCell({
   isValidPreview,
   previewColor,
   isJustPlaced,
+  isHovered,
   onMouseEnter,
   onClick,
 }: BoardCellProps) {
@@ -49,6 +52,8 @@ export default function BoardCell({
     } else {
       bgColor = 'rgba(239,68,68,0.35)';
     }
+  } else if (isHovered && !state && !isPreview) {
+    bgColor = 'rgba(148,163,184,0.25)';
   }
 
   return (
@@ -59,6 +64,7 @@ export default function BoardCell({
       onClick={onClick}
       onTouchEnd={(e) => {
         e.preventDefault();
+        onMouseEnter();
         onClick();
       }}
     >
@@ -73,3 +79,6 @@ export default function BoardCell({
     </div>
   );
 }
+
+const BoardCell = React.memo(BoardCellInner);
+export default BoardCell;
