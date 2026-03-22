@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Blokus
 
-## Getting Started
+Next.js 製のブロックスボードゲームです。ローカル4人対戦とオンライン対戦に対応しています。
 
-First, run the development server:
+## 技術スタック
+
+- **Next.js 16** / **React 19** / **TypeScript**
+- **Tailwind CSS v4**
+- **Supabase**（オンライン対戦のリアルタイム通信・DB）
+
+---
+
+## セットアップ
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ゲームの遊び方
 
-## Learn More
+### ローカル4人対戦
 
-To learn more about Next.js, take a look at the following resources:
+1. トップ画面で各プレイヤー（Blue / Yellow / Red / Green）を **Human** か **CPU** に設定する
+2. CPU を含む場合は難易度（Easy / Medium / Hard）を選択する
+3. **Start Game** を押してゲーム開始
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**プレイヤーの開始コーナー**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| 色 | 開始コーナー |
+|---|---|
+| 青（Blue） | 左上 (0, 0) |
+| 黄（Yellow） | 右上 (0, 19) |
+| 赤（Red） | 右下 (19, 19) |
+| 緑（Green） | 左下 (19, 0) |
 
-## Deploy on Vercel
+### 操作方法
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### デスクトップ
+1. 画面下のピーストレイからピースをクリックして選択
+2. ボード上にマウスを移動してプレビュー確認
+3. クリックしてピースを置く
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### タッチデバイス（スマートフォン）
+1. ピーストレイからピースをタップして選択
+2. ボード上を**1回タップ** → プレビュー表示
+3. **同じセルをもう1回タップ** → 配置確定
+
+### キーボードショートカット（デスクトップ）
+
+| キー | 操作 |
+|---|---|
+| `R` | 時計回りに回転 |
+| `Q` | 反時計回りに回転 |
+| `F` | 左右反転 |
+| `Esc` | ピースの選択解除 |
+| `Ctrl+Z` | 直前の手を元に戻す |
+
+### ゲームのルール
+
+- 最初の手は必ず自分の**開始コーナー**に置く
+- 2手目以降は、自分の色のピースの**角（コーナー）**に接するように置く
+- 自分の色の辺（エッジ）同士が隣接するように置くことはできない
+- 有効な手がない場合はパス（Pass Turn）
+- 全プレイヤーが手を打てなくなったらゲーム終了
+- **盤面に置いたマス数が最も多いプレイヤーの勝ち**
+
+### オンライン対戦
+
+画面上部の **Play Online** から `/online` ページへ移動し、ルームを作成または参加コードを入力して対戦できます。
+
+---
+
+## 開発コマンド
+
+```bash
+npm run dev    # 開発サーバー起動
+npm run build  # 本番ビルド
+npm run start  # 本番サーバー起動
+npm run lint   # ESLint 実行
+```
+
+---
+
+## デプロイ
+
+[Vercel](https://vercel.com) へのデプロイを推奨します。
+
+```bash
+# Vercel CLI を使う場合
+vercel deploy
+```
+
+詳細は [Next.js デプロイドキュメント](https://nextjs.org/docs/app/building-your-application/deploying) を参照してください。
