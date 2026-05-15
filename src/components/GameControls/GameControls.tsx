@@ -9,6 +9,7 @@ type GameControlsProps = {
   onPass: () => void;
   onUndo: () => void;
   onNewGame: () => void;
+  disabled?: boolean;
 };
 
 export default function GameControls({
@@ -18,6 +19,7 @@ export default function GameControls({
   onPass,
   onUndo,
   onNewGame,
+  disabled,
 }: GameControlsProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showPassConfirm, setShowPassConfirm] = useState(false);
@@ -56,8 +58,9 @@ export default function GameControls({
             </div>
           ) : (
             <button
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               onClick={handlePass}
+              disabled={disabled}
             >
               Pass Turn
             </button>

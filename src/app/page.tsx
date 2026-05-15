@@ -11,14 +11,17 @@ import GameOverDialog from '@/components/GameOverDialog/GameOverDialog';
 import MoveHistory from '@/components/MoveHistory/MoveHistory';
 import MobileScoreBar from '@/components/MobileScoreBar/MobileScoreBar';
 import MobileBottomBar from '@/components/MobileBottomBar/MobileBottomBar';
+import GameSetup from '@/components/GameSetup/GameSetup';
 import { useGameState } from '@/hooks/useGameState';
 import { usePieceInteraction } from '@/hooks/usePieceInteraction';
 import { useTheme } from '@/hooks/useTheme';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useTouchDevice } from '@/hooks/useTouchDevice';
+import { useAIPlayers } from '@/hooks/useAIPlayers';
 import { validatePlacement, hasAnyValidMove } from '@/utils/placementValidation';
 import { PIECE_MAP } from '@/constants/pieces';
 import { COLOR_HEX } from '@/constants/game';
+import { GameConfig } from '@/types';
 
 export default function Home() {
   const { state, currentPlayer, isFirstMove, placePiece, pass, newGame, undo, canUndo } =
@@ -43,6 +46,8 @@ export default function Home() {
     playRotate, playFlip, playPass, playUndo, playGameOver,
   } = useSoundEffects();
   const isTouchDevice = useTouchDevice();
+  const [gameConfig, setGameConfig] = useState<GameConfig | null>(null);
+  const { isAIThinking } = useAIPlayers(state, gameConfig, placePiece, pass, playPlace, playPass);
   const [message, setMessage] = useState<string | null>(null);
   const [justPlacedCells, setJustPlacedCells] = useState<Set<string>>(new Set());
   const [showHistory, setShowHistory] = useState(false);
@@ -195,6 +200,7 @@ export default function Home() {
     setMessage(null);
     setJustPlacedCells(new Set());
     setPendingPlacement(null);
+    setGameConfig(null);
   }, [newGame, deselectPiece]);
 
   // Keyboard shortcuts
@@ -235,6 +241,17 @@ export default function Home() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPieceId, rotateCW, rotateCCW, flipH, handleDeselectPiece, canUndo, undo, playRotate, playFlip]);
+
+  const isCurrentPlayerCPU = gameConfig?.playerTypes[state.currentPlayerIndex] === 'cpu';
+
+  const handleStartGame = useCallback((config: GameConfig) => {
+    newGame();
+    setGameConfig(config);
+  }, [newGame]);
+
+  if (!gameConfig) {
+    return <GameSetup onStart={handleStartGame} />;
+  }
 
   return (
     <div className="min-h-screen p-4 max-sm:p-2 flex flex-col items-center gap-4 max-sm:gap-2 relative">
@@ -301,10 +318,19 @@ export default function Home() {
       )}
 
       {/* No valid moves warning */}
-      {noValidMoves && state.phase === 'playing' && (
+      {noValidMoves && state.phase === 'playing' && !isCurrentPlayerCPU && (
         <div className="bg-amber-50 border-l-4 border-amber-500 px-4 py-2 rounded-r-lg">
           <span className="text-sm text-amber-700 font-medium">
             No valid moves available &mdash; you must pass
+          </span>
+        </div>
+      )}
+
+      {/* AI thinking indicator */}
+      {isAIThinking && (
+        <div className="px-4 py-2 rounded-lg" style={{ background: COLOR_HEX[currentPlayer.color] + '20', border: `1px solid ${COLOR_HEX[currentPlayer.color]}40` }}>
+          <span className="text-sm font-medium capitalize" style={{ color: COLOR_HEX[currentPlayer.color] }}>
+            {currentPlayer.color} (CPU) is thinking...
           </span>
         </div>
       )}
@@ -315,14 +341,15 @@ export default function Home() {
 
         {/* Left panel: Game info + controls + history (desktop only) */}
         <div className="hidden sm:flex flex-col gap-4 w-64 max-lg:w-full max-lg:max-w-xl max-lg:flex-row max-lg:flex-wrap max-lg:justify-center max-lg:gap-3">
-          <GameInfo state={state} />
+          <GameInfo state={state} gameConfig={gameConfig} />
           <GameControls
             isPlaying={state.phase === 'playing'}
-            canUndo={canUndo}
+            canUndo={canUndo && !isAIThinking}
             noValidMoves={noValidMoves}
             onPass={handlePass}
             onUndo={handleUndo}
             onNewGame={handleNewGame}
+            disabled={isAIThinking}
           />
           {/* Move History - collapsible */}
           <div className="rounded-xl shadow-sm overflow-hidden max-lg:flex-1 max-lg:min-w-[200px]" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
@@ -388,8 +415,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Desktop: Current player's piece tray */}
-      {state.phase === 'playing' && (
+      {/* Desktop: Current player's piece tray (hidden for CPU) */}
+      {state.phase === 'playing' && !isCurrentPlayerCPU && (
         <div
           className="hidden sm:block p-4 rounded-xl border-2 w-full max-w-3xl"
           style={{ borderColor: COLOR_HEX[currentPlayer.color] + '40' }}
@@ -403,24 +430,26 @@ export default function Home() {
         </div>
       )}
 
-      {/* Mobile: Bottom bar with controls + piece tray */}
+      {/* Mobile: Bottom bar with controls + piece tray (hidden for CPU) */}
       <div className="sm:hidden">
-        <MobileBottomBar
-          isPlaying={state.phase === 'playing'}
-          currentColor={currentPlayer.color}
-          selectedPieceId={selectedPieceId}
-          selectedPieceName={selectedPieceId ? PIECE_MAP[selectedPieceId].name : null}
-          remainingPieceIds={currentPlayer.remainingPieceIds}
-          canUndo={canUndo}
-          noValidMoves={noValidMoves}
-          onRotateCW={() => { rotateCW(); playRotate(); }}
-          onRotateCCW={() => { rotateCCW(); playRotate(); }}
-          onFlip={() => { flipH(); playFlip(); }}
-          onDeselect={handleDeselectPiece}
-          onSelectPiece={(id) => { selectPiece(id); playSelect(); }}
-          onPass={handlePass}
-          onUndo={handleUndo}
-        />
+        {!isCurrentPlayerCPU && (
+          <MobileBottomBar
+            isPlaying={state.phase === 'playing'}
+            currentColor={currentPlayer.color}
+            selectedPieceId={selectedPieceId}
+            selectedPieceName={selectedPieceId ? PIECE_MAP[selectedPieceId].name : null}
+            remainingPieceIds={currentPlayer.remainingPieceIds}
+            canUndo={canUndo}
+            noValidMoves={noValidMoves}
+            onRotateCW={() => { rotateCW(); playRotate(); }}
+            onRotateCCW={() => { rotateCCW(); playRotate(); }}
+            onFlip={() => { flipH(); playFlip(); }}
+            onDeselect={handleDeselectPiece}
+            onSelectPiece={(id) => { selectPiece(id); playSelect(); }}
+            onPass={handlePass}
+            onUndo={handleUndo}
+          />
+        )}
       </div>
 
       {/* Game over dialog */}

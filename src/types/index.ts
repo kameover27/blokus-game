@@ -56,3 +56,10 @@ export type GameAction =
   | { type: 'PASS' }
   | { type: 'NEW_GAME' }
   | { type: 'UNDO' };
+
+export type PlayerType = 'human' | 'cpu';
+export type AIDifficulty = 'easy' | 'medium' | 'hard';
+export type GameConfig = {
+  playerTypes: [PlayerType, PlayerType, PlayerType, PlayerType];
+  aiDifficulty: AIDifficulty;
+};

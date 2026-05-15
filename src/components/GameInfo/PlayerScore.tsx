@@ -9,6 +9,8 @@ type PlayerScoreProps = {
   piecesRemaining: number;
   isCurrent: boolean;
   hasPassed: boolean;
+  isCPU?: boolean;
+  isYou?: boolean;
 };
 
 export default function PlayerScore({
@@ -17,6 +19,8 @@ export default function PlayerScore({
   piecesRemaining,
   isCurrent,
   hasPassed,
+  isCPU,
+  isYou,
 }: PlayerScoreProps) {
   return (
     <div
@@ -37,6 +41,16 @@ export default function PlayerScore({
       <div className="flex flex-col">
         <span className="text-sm font-bold capitalize">
           {color}
+          {isCPU && (
+            <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600">
+              CPU
+            </span>
+          )}
+          {isYou && (
+            <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+              You
+            </span>
+          )}
           {isCurrent && (
             <span className="ml-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
               Active
