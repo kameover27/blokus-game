@@ -9,6 +9,9 @@ type PiecePreviewProps = {
   isSelected: boolean;
   isUsed: boolean;
   onClick: () => void;
+  onTouchDragStart?: (pieceId: string) => void;
+  onTouchDragMove?: (x: number, y: number) => void;
+  onTouchDragEnd?: () => void;
 };
 
 export default function PiecePreview({
@@ -17,6 +20,9 @@ export default function PiecePreview({
   isSelected,
   isUsed,
   onClick,
+  onTouchDragStart,
+  onTouchDragMove,
+  onTouchDragEnd,
 }: PiecePreviewProps) {
   const maxRow = Math.max(...piece.shape.map((c) => c.row)) + 1;
   const maxCol = Math.max(...piece.shape.map((c) => c.col)) + 1;
@@ -42,6 +48,19 @@ export default function PiecePreview({
       onClick={isUsed ? undefined : onClick}
       disabled={isUsed}
       title={piece.name}
+      onTouchStart={isUsed || !onTouchDragStart ? undefined : (e) => {
+        e.preventDefault();
+        onTouchDragStart(piece.id);
+      }}
+      onTouchMove={!onTouchDragMove ? undefined : (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        onTouchDragMove(touch.clientX, touch.clientY);
+      }}
+      onTouchEnd={!onTouchDragEnd ? undefined : (e) => {
+        e.preventDefault();
+        onTouchDragEnd();
+      }}
     >
       {Array.from({ length: maxRow }, (_, r) =>
         Array.from({ length: maxCol }, (_, c) => (

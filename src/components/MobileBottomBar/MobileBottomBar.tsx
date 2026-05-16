@@ -21,6 +21,9 @@ type MobileBottomBarProps = {
   onSelectPiece: (pieceId: string) => void;
   onPass: () => void;
   onUndo: () => void;
+  onTouchDragStart?: (pieceId: string) => void;
+  onTouchDragMove?: (x: number, y: number) => void;
+  onTouchDragEnd?: () => void;
 };
 
 export default function MobileBottomBar({
@@ -38,6 +41,9 @@ export default function MobileBottomBar({
   onSelectPiece,
   onPass,
   onUndo,
+  onTouchDragStart,
+  onTouchDragMove,
+  onTouchDragEnd,
 }: MobileBottomBarProps) {
   const [showPassConfirm, setShowPassConfirm] = useState(false);
 
@@ -117,6 +123,9 @@ export default function MobileBottomBar({
         remainingPieceIds={remainingPieceIds}
         selectedPieceId={selectedPieceId}
         onSelectPiece={onSelectPiece}
+        onTouchDragStart={onTouchDragStart}
+        onTouchDragMove={onTouchDragMove}
+        onTouchDragEnd={onTouchDragEnd}
       />
     </div>
   );

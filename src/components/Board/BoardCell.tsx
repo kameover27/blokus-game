@@ -60,6 +60,8 @@ function BoardCellInner({
     <div
       className={`board-cell cursor-pointer ${isJustPlaced ? 'cell-just-placed' : ''}`}
       style={{ backgroundColor: bgColor }}
+      data-row={row}
+      data-col={col}
       onMouseEnter={onMouseEnter}
       onClick={onClick}
       onTouchEnd={(e) => {

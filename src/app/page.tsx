@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Board from '@/components/Board/Board';
 import PieceTray from '@/components/PieceTray/PieceTray';
 import ActivePieceDisplay from '@/components/ActivePiece/ActivePieceDisplay';
@@ -54,6 +54,7 @@ export default function Home() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [noValidMoves, setNoValidMoves] = useState(false);
   const [pendingPlacement, setPendingPlacement] = useState<{ row: number; col: number } | null>(null);
+  const lastDragCellRef = useRef<{ row: number; col: number } | null>(null);
 
   // Clear message after 3.5 seconds
   useEffect(() => {
@@ -174,6 +175,39 @@ export default function Home() {
   const handleMouseLeave = useCallback(() => {
     setHoveredCell(null);
   }, [setHoveredCell]);
+
+  const handlePieceTouchDragStart = useCallback((pieceId: string) => {
+    selectPiece(pieceId);
+    playSelect();
+  }, [selectPiece, playSelect]);
+
+  const handlePieceTouchDragMove = useCallback((x: number, y: number) => {
+    const el = document.elementFromPoint(x, y);
+    const cellEl = el?.closest('[data-row]') as HTMLElement | null;
+    if (cellEl) {
+      const rowStr = cellEl.getAttribute('data-row');
+      const colStr = cellEl.getAttribute('data-col');
+      if (rowStr !== null && colStr !== null) {
+        const row = parseInt(rowStr, 10);
+        const col = parseInt(colStr, 10);
+        if (!isNaN(row) && !isNaN(col)) {
+          setHoveredCell({ row, col });
+          lastDragCellRef.current = { row, col };
+          return;
+        }
+      }
+    }
+    setHoveredCell(null);
+    lastDragCellRef.current = null;
+  }, [setHoveredCell]);
+
+  const handlePieceTouchDragEnd = useCallback(() => {
+    const cell = lastDragCellRef.current;
+    lastDragCellRef.current = null;
+    if (cell) {
+      handleCellClick(cell.row, cell.col);
+    }
+  }, [handleCellClick]);
 
   const handleDeselectPiece = useCallback(() => {
     deselectPiece();
@@ -370,7 +404,7 @@ export default function Home() {
         </div>
 
         {/* Center: Board */}
-        <div className="flex flex-col items-center gap-3 max-sm:pb-[220px]">
+        <div className="flex flex-col items-center gap-3 max-sm:pb-[260px]">
           <Board
             board={state.board}
             previewCells={previewCells}
@@ -448,6 +482,9 @@ export default function Home() {
             onSelectPiece={(id) => { selectPiece(id); playSelect(); }}
             onPass={handlePass}
             onUndo={handleUndo}
+            onTouchDragStart={handlePieceTouchDragStart}
+            onTouchDragMove={handlePieceTouchDragMove}
+            onTouchDragEnd={handlePieceTouchDragEnd}
           />
         )}
       </div>
